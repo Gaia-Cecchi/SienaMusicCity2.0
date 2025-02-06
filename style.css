@@ -490,12 +490,94 @@ body {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(3, 1fr);
     }
+
+    /* Chat Widget su mobile */
+    .chat-widget {
+        width: 100%;
+        height: 100%;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+    }
+
+    .chat-widget.minimized {
+        transform: translateY(calc(100% - 50px));
+    }
+
+    .chat-header {
+        border-radius: 0;
+        padding: 12px;
+    }
+
+    /* Calendario su mobile */
+    .calendar-section {
+        padding: var(--spacing-sm);
+        margin-top: var(--spacing-sm);
+    }
+
+    .fc .fc-toolbar {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: var(--font-size-lg) !important;
+    }
+
+    /* Filtri su mobile */
+    .filters-section {
+        padding: var(--spacing-sm);
+    }
+
+    .filter-dropdown {
+        min-width: 100%;
+    }
+
+    /* Messaggi chat su mobile */
+    .message {
+        max-width: 90%;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
     .partners-grid {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(6, 1fr);
+    }
+
+    /* Header e navigazione */
+    .nav-container {
+        padding: var(--spacing-sm);
+    }
+
+    .nav-links {
+        gap: var(--spacing-sm);
+    }
+
+    /* Calendario */
+    .fc .fc-toolbar-title {
+        font-size: var(--font-size-base) !important;
+    }
+
+    .fc .fc-button {
+        padding: 6px 8px !important;
+        font-size: var(--font-size-sm) !important;
+    }
+
+    /* Input e bottoni */
+    .chat-input {
+        padding: var(--spacing-sm);
+    }
+
+    .chat-input input {
+        font-size: var(--font-size-xs);
+    }
+
+    .chat-input button {
+        padding: 8px 12px;
+        font-size: var(--font-size-xs);
     }
 }
 
@@ -748,4 +830,12 @@ body {
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
+}
+
+/* Fix per la visualizzazione su iPhone */
+@supports (-webkit-touch-callout: none) {
+    .chat-widget {
+        bottom: env(safe-area-inset-bottom);
+        height: calc(100% - env(safe-area-inset-bottom));
+    }
 }
