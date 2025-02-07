@@ -46,7 +46,19 @@ class EventiChatbot {
     }
 
     setupEventListeners() {
-        const { chatInput, sendButton, toggleButton, chatWidget } = this.elements;
+        const { chatInput, sendButton, chatWidget } = this.elements;
+
+        // Aggiungi l'event listener per il click sia sull'header che sull'icona
+        const chatHeader = document.querySelector('.chat-header');
+        const toggleButton = document.getElementById('toggle-chat');
+        
+        const toggleChat = () => chatWidget.classList.toggle('minimized');
+        
+        if (chatHeader) chatHeader.addEventListener('click', toggleChat);
+        if (toggleButton) toggleButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Previene il doppio trigger con il click dell'header
+            toggleChat();
+        });
 
         if (sendButton) {
             sendButton.addEventListener('click', () => this.handleUserMessage());
@@ -58,12 +70,6 @@ class EventiChatbot {
                     e.preventDefault();
                     this.handleUserMessage();
                 }
-            });
-        }
-
-        if (toggleButton && chatWidget) {
-            toggleButton.addEventListener('click', () => {
-                chatWidget.classList.toggle('minimized');
             });
         }
     }

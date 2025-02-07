@@ -176,6 +176,11 @@ body {
     color: var(--color-white);
 }
 
+.filter-option.selected {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
 /* Calendar Controls */
 .calendar-controls {
   width: 100%;
@@ -210,6 +215,24 @@ body {
   background-color: var(--color-white);
   color: var(--color-primary); /* aggiunto il colore del testo in hover */
   transition: all 0.2s ease;
+}
+
+.btn-reset {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-reset:hover {
+    background-color: var(--color-white);
+    color: var(--color-text-primary);
 }
 
 /* Calendar Section */
@@ -655,12 +678,37 @@ body {
         top: auto; /* rimuove il top: 60px precedente */
         border-radius: 0;
         position: fixed;
+        transform-origin: bottom center;
     }
 
     .chat-messages {
         padding: var(--spacing-sm);
         height: calc(100vh - 180px); /* altezza viewport meno header e input */
         overflow-y: auto;
+    }
+
+    .chat-widget.minimized {
+        transform: translateY(calc(100% - 60px)) scale(0.95);
+    }
+
+    .chat-header {
+        border-radius: 0;
+        padding: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    .chat-messages {
+        padding: var(--spacing-sm);
+        max-height: calc(100vh - 120px);
+    }
+
+    .chat-input {
+        position: sticky;
+        bottom: 0;
+        background: var(--color-white);
+        padding: var(--spacing-sm);
     }
 }
 
@@ -752,6 +800,57 @@ body {
             bottom: env(safe-area-inset-bottom);
             top: auto;
         }
+    }
+
+    /* Migliora spaziature footer */
+    .partners-section,
+    .newsletter-section,
+    .contacts-section,
+    .support-section {
+        padding: var(--spacing-lg) !important; /* Aumentato da xs a lg */
+    }
+
+    .partners-section h2,
+    .newsletter-section h2,
+    .contacts-section h2,
+    .support-section h2 {
+        margin-bottom: var(--spacing-md) !important;
+    }
+
+    .contact-list {
+        gap: var(--spacing-md) !important;
+    }
+
+    .newsletter-form,
+    .whatsapp-form {
+        margin: var(--spacing-md) 0 !important;
+    }
+
+    .footer-content {
+        gap: var(--spacing-md) !important;
+        padding: var(--spacing-md) !important;
+    }
+
+    /* Migliora spaziature filtri */
+    .filters-section {
+        padding: var(--spacing-lg) !important; /* Aumentato da xs a lg */
+    }
+
+    .filter-header {
+        padding: var(--spacing-md) !important;
+    }
+
+    .filter-content {
+        padding: var(--spacing-md) !important;
+    }
+
+    .filter-option {
+        padding: var(--spacing-sm) var(--spacing-md) !important;
+    }
+
+    .calendar-controls {
+        gap: var(--spacing-md) !important;
+        padding: var(--spacing-md) 0 !important;
     }
 }
 
@@ -861,11 +960,41 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  transition: transform 0.3s ease;
+  transform-origin: bottom right;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .chat-widget.minimized {
-  transform: translateY(calc(100% - 60px));
+  width: 60px;
+  height: 60px !important;
+  border-radius: 50%;
+  transform: scale(0.95);
+}
+
+.chat-widget.minimized .chat-header {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border-radius: 50%;
+  transform: scale(1);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.chat-header {
+  transform-origin: center;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.chat-messages,
+.chat-input {
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+.chat-widget.minimized .chat-messages,
+.chat-widget.minimized .chat-input {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .chat-header {
@@ -876,6 +1005,34 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.chat-header:hover::before {
+  content: "Chiudi chat";
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-widget.minimized .chat-header:hover::before {
+  content: "Apri chat";
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 5px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 .chat-header button {
@@ -1030,6 +1187,68 @@ body {
     transition: all 0.3s ease;
 }
 
+.chat-widget.minimized {
+    width: 60px;
+    height: 60px !important;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.chat-widget.minimized .chat-header {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+}
+
+.chat-widget.minimized #toggle-chat {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    display: block;
+}
+
+.chat-widget.minimized #toggle-chat img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.chat-widget.minimized .chat-messages,
+.chat-widget.minimized .chat-input {
+    display: none;
+}
+
+.chat-widget.minimized .chat-header {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.chat-widget.minimized .chat-header span {
+    display: none;
+}
+
+.chat-widget.minimized .chat-header #toggle-chat {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-widget.minimized .chat-header #toggle-chat img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    padding: 0;
+}
+
 /* Media Query per tablet */
 @media (max-width: 768px) {
     .chat-widget {
@@ -1134,4 +1353,284 @@ body {
             padding-bottom: env(safe-area-inset-bottom);
         }
     }
+}
+
+/* Stili personalizzati per le celle del calendario */
+.fc .fc-daygrid-day {
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+    overflow: visible; /* Aggiunto per assicurarsi che il tooltip sia visibile */
+}
+
+.fc .fc-daygrid-day:hover {
+    background-color: rgba(162, 203, 223, 0.1) !important;
+}
+
+/* Nascondi gli eventi nel calendario */
+.fc-daygrid-event-harness {
+    display: none !important;
+}
+
+/* Punto per indicare la presenza di eventi */
+.fc .fc-daygrid-day.has-events {
+    position: relative;
+}
+
+.fc .fc-daygrid-day.has-events::after {
+    content: '';
+    width: 10px; /* Aumentato da 6px a 10px */
+    height: 10px; /* Aumentato da 6px a 10px */
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    left: 8px; /* Cambiato da right a left */
+    transition: transform 0.3s ease;
+}
+
+.fc .fc-daygrid-day.has-events:hover::after {
+    transform: scale(1.2);
+}
+
+/* Tooltip all'interno della cella - caso generico */
+.fc .fc-daygrid-day[data-event-count]::before {
+    content: attr(data-event-count) " eventi";
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    transform: none;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-size-xs);
+    padding: 2px 0;
+    text-align: center;
+    z-index: 10;
+    opacity: 1;
+    font-weight: 500;
+    line-height: 1.2;
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+}
+
+/* Tooltip all'interno della cella - caso singolare (maggiore specificità) */
+.fc .fc-daygrid-day[data-event-count="1"]::before {
+    content: "1 evento" !important;
+}
+
+/* Assicurati che la cella possa contenere il tooltip */
+.fc .fc-daygrid-day {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* Mostra tooltip solo all'hover */
+.fc .fc-daygrid-day:hover::before {
+    display: block !important;
+}
+
+/* Rimuovi il conteggio permanente */
+.event-count {
+    display: none !important;
+}
+
+/* Stile per il conteggio eventi nella cella */
+.fc .fc-daygrid-day-bottom {
+    position: relative;
+    z-index: 1;
+}
+
+/* Stile per il popup degli eventi */
+.event-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--color-white);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.event-popup.active {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+.event-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-accent);
+}
+
+.event-popup-date {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.event-popup-close {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    font-size: var(--font-size-xl);
+    transition: transform 0.2s ease;
+}
+
+.event-popup-close:hover {
+    transform: rotate(90deg);
+}
+
+.event-popup-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.event-popup-item {
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.event-popup-item:hover {
+    transform: translateX(4px);
+}
+
+.event-popup-item h3 {
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.event-popup-item h3::after {
+    content: '▼';
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+}
+
+.event-popup-item.expanded h3::after {
+    transform: rotate(180deg);
+}
+
+.event-popup-details {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.event-popup-description {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-accent);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.event-popup-item.expanded .event-popup-description {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: var(--spacing-md);
+}
+
+.event-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.event-popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Stili personalizzati per le celle del calendario */
+.fc .fc-daygrid-day {
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.fc .fc-daygrid-day:hover {
+    background-color: var(--color-secondary) !important;
+    opacity: 0.1;
+}
+
+.fc .fc-daygrid-day-events {
+    position: relative;
+}
+
+/* Punto per indicare la presenza di eventi */
+.fc .fc-daygrid-day.has-events::after {
+    content: '';
+    width: 10px; /* Aumentato da 6px a 10px */
+    height: 10px; /* Aumentato da 6px a 10px */
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    left: 8px; /* Cambiato da right a left */
+    transition: transform 0.3s ease;
+}
+
+.fc .fc-daygrid-day.has-events:hover::after {
+    transform: scale(1.2);
+}
+
+/* Tooltip con numero eventi */
+.fc .fc-daygrid-day[data-event-count]::before {
+    content: attr(data-event-count) ' eventi';
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-size-xs);
+    padding: 10px 8px;
+    border-radius: var(--border-radius-sm);
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.fc .fc-daygrid-day:hover::before {
+    display: block;
+}
+
+/* Assicurati che il contenitore del giorno non abbia opacità che influisce sui figli */
+.fc-daygrid-day-frame {
+    opacity: 1 !important;
+    position: relative;
+    z-index: 2;
 }

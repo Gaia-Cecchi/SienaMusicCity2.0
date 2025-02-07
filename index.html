@@ -71,6 +71,40 @@
                 </div>
             </div>
 
+            <!-- Location Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Luogo</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Teatro dei Rozzi</div>
+                    <div class="filter-option">Viper Theatre</div>
+                    <div class="filter-option">Museo del Tessuto</div>
+                    <div class="filter-option">Teatro Moderno</div>
+                    <div class="filter-option">Teatro Cartiere Carrara</div>
+                    <div class="filter-option">Sala Vanni</div>
+                    <div class="filter-option">Teatro Verdi</div>
+                    <div class="filter-option">Spazio Bonci</div>
+                    <div class="filter-option">Nelson Mandela Forum</div>
+                </div>
+            </div>
+
+            <!-- Distance Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Distanza</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Entro 5 km</div>
+                    <div class="filter-option">Entro 10 km</div>
+                    <div class="filter-option">Entro 20 km</div>
+                    <div class="filter-option">Entro 50 km</div>
+                    <div class="filter-option">Qualsiasi distanza</div>
+                </div>
+            </div>
+
             <!-- Time Filter -->
             <div class="filter-dropdown">
                 <div class="filter-header">
@@ -89,6 +123,7 @@
             <div class="calendar-controls">
                 <input type="text" id="nameFilter" placeholder="Filtra eventi per nome..." />
                 <button id="updateEvents">Aggiorna Eventi</button>
+                <button id="resetFilters" class="btn-reset">Azzera Filtri</button> <!-- Nuovo pulsante -->
                 <div class="loading-container">
                     <div class="loading-bar"></div>
                 </div>
@@ -102,11 +137,11 @@
     </main>
 
 <!-- Chat Widget -->
-<div id="chat-widget" class="chat-widget">
+<div id="chat-widget" class="chat-widget minimized">
     <div class="chat-header">
         <span>Assistente per gli eventi</span>
         <button id="toggle-chat">
-            <img src="img/chatbot_icon.png" alt="Toggle chat" />
+            <img src="img/chatbot_icon.png" alt="Chat bot" />
         </button>
     </div>
     <div class="chat-messages" id="chat-messages">
