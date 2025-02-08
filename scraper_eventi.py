@@ -80,7 +80,7 @@ def generate_event_description(event):
     try:
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model="llama3-8b-8192",
+            model="llama-3.3-70b-versatile",
             max_tokens=150
         )
         return chat_completion.choices[0].message.content

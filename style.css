@@ -45,7 +45,7 @@
 
 body {
     font-family: var(--font-family-primary);
-    background-color: var(--color-accent);
+    background-color: var(--color-white);  /* Cambiato da var(--color-accent) a var(--color-white) */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -237,7 +237,7 @@ body {
 
 /* Calendar Section */
 .calendar-section {
-    background-color: var(--color-white);
+    background-color: var(--color-secondary); /* Cambiato da var(--color-white) a var(--color-secondary) */
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-lg);
     margin-top: var(--spacing-lg);
@@ -1091,6 +1091,7 @@ body {
   border: 1px solid var(--color-background);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);
+  font-family: var(--font-family-primary); /* Aggiunto font Poppins */
 }
 
 .chat-input button {
@@ -1101,10 +1102,7 @@ body {
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
-
-.chat-input button:hover {
-  background-color: var(--color-secondary);
+  font-family: var(--font-family-primary); /* Aggiunto font Poppins */
 }
 
 /* Stili per il chatbot */
@@ -1361,6 +1359,7 @@ body {
     position: relative;
     cursor: pointer;
     overflow: visible; /* Aggiunto per assicurarsi che il tooltip sia visibile */
+    background-color: var(--color-white) !important;
 }
 
 .fc .fc-daygrid-day:hover {

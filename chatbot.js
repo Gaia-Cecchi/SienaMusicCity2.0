@@ -1,6 +1,5 @@
 class EventiChatbot {
-    // Constants
-    static MODEL = "llama3-70b-8192";
+    static MODEL = "llama-3.3-70b-versatile";
     static MAX_HISTORY = 6;
     static MIN_SEARCH_TERM_LENGTH = 3;
 
@@ -8,7 +7,21 @@ class EventiChatbot {
         // Initialize core properties
         this.events = this.preprocessEvents(events);
         this.conversationHistory = [];
-        this.currentDate = new Date('2025-02-06T16:18:42Z');
+        
+        // Usa la data corrente del sistema
+        const now = new Date();
+        // Imposta l'anno a 2025 mantenendo data e ora correnti
+        this.currentDate = new Date(
+            2025,
+            now.getMonth(),
+            now.getDate(),
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds()
+        );
+
+        console.log('Current date set to:', this.currentDate.toLocaleString('it-IT')); // Debug log
+        
         this.currentUser = 'Gaia-Cecchi';
         this.apiKey = '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';
         this.initialized = false;
@@ -23,18 +36,33 @@ class EventiChatbot {
 
         this.setupEventListeners();
         this.addWelcomeMessage();
+
+        // Aggiungi l'indice per il RAG
+        this.eventIndex = this.createEventIndex(events);
     }
 
-    // Pre-process events for faster searching
     preprocessEvents(events) {
-        return events.map(event => ({
-            ...event,
-            searchText: `${event.title} ${event.extendedProps.location} ${event.extendedProps.description}`.toLowerCase(),
-            date: new Date(event.start)
-        }));
+        return events.map(event => {
+            // Converti la data nel fuso orario italiano
+            const dateParts = event.start.split('T')[0].split('-');
+            const localDate = new Date(
+                parseInt(dateParts[0]), 
+                parseInt(dateParts[1]) - 1, 
+                parseInt(dateParts[2]),
+                1, 0, 0 // Imposta l'ora a 01:00 per assicurarsi che sia nel giorno corretto in CET
+            );
+            
+            // Aggiungi un giorno
+            localDate.setDate(localDate.getDate() + 1);
+            
+            return {
+                ...event,
+                searchText: `${event.title} ${event.extendedProps.location} ${event.extendedProps.description}`.toLowerCase(),
+                date: localDate
+            };
+        }).sort((a, b) => a.date.getTime() - b.date.getTime());
     }
 
-    // Cache DOM elements for better performance
     cacheDOMElements() {
         return {
             chatMessages: document.getElementById('chat-messages'),
@@ -104,20 +132,75 @@ class EventiChatbot {
         }
     }
 
+    createEventIndex(events) {
+        return events.map(event => {
+            // Usa lo stesso metodo di preprocessEvents per la coerenza delle date
+            const dateParts = event.start.split('T')[0].split('-');
+            const localDate = new Date(
+                parseInt(dateParts[0]), 
+                parseInt(dateParts[1]) - 1, 
+                parseInt(dateParts[2]),
+                1, 0, 0 // Imposta l'ora a 01:00 per assicurarsi che sia nel giorno corretto in CET
+            );
+
+            // Aggiungi un giorno
+            localDate.setDate(localDate.getDate() + 1);
+
+            return {
+                title: event.title || '',
+                description: event.extendedProps?.description || '',
+                location: event.extendedProps?.location || '',
+                date: localDate,
+                time: event.extendedProps?.time || '',
+                price: event.extendedProps?.price || '',
+                searchText: `${event.title} ${event.extendedProps?.description} ${event.extendedProps?.location}`.toLowerCase()
+            };
+        }).sort((a, b) => a.date.getTime() - b.date.getTime());
+    }
+
+    searchEvents(query, maxResults = 3) {
+        const keywords = query.toLowerCase().split(' ');
+        const results = this.eventIndex
+            .map(event => {
+                const score = keywords.reduce((acc, keyword) => {
+                    if (event.searchText.includes(keyword)) {
+                        acc += 1;
+                    }
+                    return acc;
+                }, 0);
+                return { event, score };
+            })
+            .filter(result => result.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, maxResults);
+
+        return results.map(r => r.event);
+    }
+
     async generateResponse(message) {
-        // First message greeting check
+        const relevantEvents = this.searchEvents(message);
+        
+        const eventsContext = relevantEvents.length > 0 ? 
+            `Ho trovato questi eventi che potrebbero interessarti:\n${
+                relevantEvents.map(event => 
+                    `- ${event.title} (${event.date.toLocaleDateString('it-IT')})
+                     📍 ${event.location}
+                     ⏰ ${event.time}
+                     ${event.price ? `💰 ${event.price}` : ''}`
+                ).join('\n')
+            }` : 
+            'Non ho trovato eventi specifici per questa richiesta.';
+
         if (this.isBasicGreeting(message) && this.conversationHistory.length === 0) {
             return "Come posso aiutarti a trovare eventi interessanti?";
         }
 
-        // Event-related query check
         if (this.isEventRelatedQuery(message)) {
-            return this.searchLocalEvents(message);
+            return this.formatEventResponse(relevantEvents, message);
         }
 
-        // API fallback
         try {
-            const response = await this.getGroqResponse(message);
+            const response = await this.getGroqResponse(message, eventsContext);
             if (this.isValidResponse(response)) {
                 return response;
             }
@@ -128,18 +211,40 @@ class EventiChatbot {
         return this.getGenericResponse();
     }
 
-    isValidResponse(response) {
-        return response && 
-               response.trim() && 
-               !response.toLowerCase().includes("ciao! sono alice");
+    formatEventResponse(events, query) {
+        if (events.length === 0) {
+            return "Mi dispiace, non ho trovato eventi che corrispondono alla tua ricerca. Vuoi provare a cercare in un altro modo?";
+        }
+
+        const today = new Date();
+        const isDateQuery = query.toLowerCase().includes('oggi') || query.toLowerCase().includes('domani');
+
+        if (isDateQuery) {
+            const todayEvents = events.filter(e => 
+                e.date.toDateString() === today.toDateString()
+            );
+
+            if (query.toLowerCase().includes('oggi')) {
+                return todayEvents.length > 0 ? 
+                    `Ecco gli eventi di oggi:\n${this.formatEventsList(todayEvents)}` :
+                    "Oggi non ci sono eventi programmati. Vuoi vedere i prossimi eventi?";
+            }
+        }
+
+        return `Ho trovato questi eventi che potrebbero interessarti:\n${this.formatEventsList(events)}`;
     }
 
-    isBasicGreeting(message) {
-        const greetings = new Set(['ciao', 'hey', 'buongiorno', 'buonasera', 'salve', 'hi', 'hello']);
-        return greetings.has(message.toLowerCase().trim());
+    formatEventsList(events) {
+        return events.map(event => 
+            `🎭 ${event.title}\n` +
+            `📅 ${event.date.toLocaleDateString('it-IT')}\n` +
+            `📍 ${event.location}\n` +
+            `⏰ ${event.time}\n` +
+            (event.price ? `💰 ${event.price}\n` : '')
+        ).join('\n');
     }
 
-    async getGroqResponse(userMessage) {
+    async getGroqResponse(userMessage, eventsContext) {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -157,6 +262,10 @@ class EventiChatbot {
                     {
                         role: "user",
                         content: userMessage
+                    },
+                    {
+                        role: "system",
+                        content: eventsContext
                     }
                 ],
                 temperature: 0.6,
@@ -174,13 +283,23 @@ class EventiChatbot {
         return botResponse;
     }
 
+    isValidResponse(response) {
+        return response && 
+               response.trim() && 
+               !response.toLowerCase().includes("ciao! sono alice");
+    }
+
+    isBasicGreeting(message) {
+        const greetings = new Set(['ciao', 'hey', 'buongiorno', 'buonasera', 'salve', 'hi', 'hello']);
+        return greetings.has(message.toLowerCase().trim());
+    }
+
     updateConversationHistory(userMessage, botResponse) {
         this.conversationHistory.push(
             { role: "user", content: userMessage },
             { role: "assistant", content: botResponse }
         );
 
-        // Keep only the last MAX_HISTORY messages
         if (this.conversationHistory.length > EventiChatbot.MAX_HISTORY) {
             this.conversationHistory = this.conversationHistory.slice(-EventiChatbot.MAX_HISTORY);
         }
@@ -212,7 +331,11 @@ class EventiChatbot {
             7. NON essere prolissa
             8. NON ripetere informazioni
             9. Puoi usare qualche emoticon dove serve, ma senza esagerare
-            
+            10. Sei un'assistente incentrato sugli eventi, ma se l'utente non ti parla degli eventi, non parlare solo di essi. Puoi parlare anche di cultura, storia, luoghi, ecc. e altre cose generiche.
+            11. "Eventi" è plurale, dunque usa "ci sono" e non "c'è" e "programmati" e non "programmato".
+            12. Non assumere che l'utente voglia sapere degli eventi, ma chiedi prima.
+            13. Se l'utente chiede di non parlare di eventi, rispetta la richiesta e non rispondere con "Mi dispiace, puoi ripetere in altro modo?". Rispondi ad altre domande ma solo se non offensive.
+
             Data corrente: ${this.currentDate.toLocaleString('it-IT')}`;
     }
 
@@ -231,7 +354,7 @@ class EventiChatbot {
                 todayEvents.push(event);
             } else if (eventDate > today) {
                 futureEvents.push(event);
-                if (futureEvents.length >= 5) break; // Limit future events to 5
+                if (futureEvents.length >= 5) break;
             }
         }
 
@@ -267,12 +390,24 @@ class EventiChatbot {
         query = query.toLowerCase();
         const today = new Date(this.currentDate);
         today.setHours(0, 0, 0, 0);
+        const todayUTC = new Date(Date.UTC(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+            0, 0, 0
+        ));
 
-        // Today's events
         if (query.includes('oggi')) {
-            const todayEvents = this.events.filter(event => 
-                event.date.setHours(0, 0, 0, 0) === today.getTime()
-            );
+            const todayEvents = this.events.filter(event => {
+                const eventDate = new Date(event.date);
+                const eventUTC = new Date(Date.UTC(
+                    eventDate.getFullYear(),
+                    eventDate.getMonth(),
+                    eventDate.getDate(),
+                    0, 0, 0
+                ));
+                return eventUTC.getTime() === todayUTC.getTime();
+            });
 
             if (todayEvents.length) {
                 return this.formatSearchResults(todayEvents);
@@ -280,28 +415,26 @@ class EventiChatbot {
             return "Oggi non ci sono eventi in programma. Vuoi scoprire i prossimi eventi?";
         }
 
-        // Future events
         if (query.includes('prossim')) {
-            const futureEvents = this.events
-                .filter(event => event.date > today)
-                .slice(0, 3);
+            const futureEvents = this.events.filter(event => {
+                const eventDate = new Date(event.date);
+                eventDate.setHours(0, 0, 0, 0);
+                return eventDate >= today;
+            }).slice(0, 3);
 
             if (futureEvents.length) {
                 return this.formatSearchResults(futureEvents);
             }
         }
 
-        // General search
-        const searchTerms = query.split(' ')
-            .filter(term => term.length > EventiChatbot.MIN_SEARCH_TERM_LENGTH);
-        
-        if (!searchTerms.length) {
-            return this.getGenericResponse();
-        }
-
-        const matchingEvents = this.events.filter(event =>
-            searchTerms.some(term => event.searchText.includes(term))
-        );
+        const matchingEvents = this.events.filter(event => {
+            const eventDate = new Date(event.date);
+            eventDate.setHours(0, 0, 0, 0);
+            return (eventDate >= today) && 
+                   query.split(' ')
+                       .filter(term => term.length > EventiChatbot.MIN_SEARCH_TERM_LENGTH)
+                       .some(term => event.searchText.includes(term.toLowerCase()));
+        });
 
         if (matchingEvents.length) {
             return this.formatSearchResults(matchingEvents);
@@ -348,7 +481,6 @@ class EventiChatbot {
     }
 }
 
-// Export as a module
 export function initChatbot(events) {
     if (events) {
         window.chatbot = new EventiChatbot(events);
