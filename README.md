@@ -1,35 +1,41 @@
 # Siena Music City - Thesis Project
 
-[English version below]
+Questa repository contiene il codice e le risorse sviluppate per la mia tesi magistrale presso l'Università di Siena, dal titolo:
+**"DESIGN DI UN PERCORSO D'INNOVAZIONE PER UN'IDENTITÀ MUSICALE D'ECCELLENZA: il processo creativo per rilanciare la leadership di Siena, aspirante Città della Musica UNESCO"**.
 
-## Guida all'Utilizzo
+## Evoluzione del Progetto
 
-### 1. Web Scraping degli Eventi
-Per eseguire lo scraping degli eventi:
-1. Installa le dipendenze: `pip install -r requirements.txt`
-2. Esegui lo script: `python scraper_eventi.py`
-Gli eventi verranno salvati in `eventi_siena.json`
+La versione 2.0 del sito web rappresenta un significativo miglioramento rispetto alla versione 1.0, con due principali innovazioni:
+- Integrazione di un chatbot interattivo per assistere gli utenti nella ricerca e scoperta degli eventi musicali
+- Restyling completo dell'interfaccia per allinearsi meglio al prototipo sviluppato su Figma
 
-### 2. Visualizzazione del Calendario
-1. Apri `index.html` in un browser
-2. Il calendario si popolerà automaticamente con gli eventi dal file JSON
-3. Usa i filtri per cercare eventi specifici
+## Scopo del Progetto
 
-### 3. Utilizzo del Chatbot
-Per utilizzare il chatbot è necessaria una chiave API personale di Groq:
+Il progetto esplora l'integrazione tra design e tecnologia per valorizzare la candidatura di Siena come Città Creativa UNESCO per la Musica. Include un prototipo di sito web per la promozione degli eventi musicali e uno strumento di web scraping per aggregare i dati degli eventi.
 
-1. **Ottieni una chiave API Groq:**
-   - Visita [Groq Console](https://console.groq.com/sign-up)
-   - Crea un account gratuito
-   - Vai alla sezione "API Keys"
-   - Genera una nuova chiave API
+Nota bene: il web scraping condotto in questo progetto è puramente a scopo accademico e mira a dimostrare la fattibilità tecnica nell'ambito della mia tesi. Non intende violare copyright o altri diritti. In caso di problemi, contattatemi e provvederò prontamente a risolverli.
 
-2. **Usa il chatbot:**
-   - Clicca sull'icona del chatbot nel sito
-   - Inserisci la tua chiave API quando richiesto
-   - Inizia a chattare con l'assistente!
+Visualizza qui la mia **presentazione della tesi**:
+- [Visualizza PDF](https://drive.google.com/file/d/1392bzoEwEVVJTHvDeTGHus5EsjM7aLxN/view?usp=drive_link)
+- [Visualizza Canva](https://www.canva.com/design/DAGXe-lOUzY/qH4swbUynFnaC55hYguIDw/view?utm_content=DAGXe-lOUzY&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h716810ae54)
 
-> ⚠️ **Importante:** Non condividere mai la tua chiave API. La richiesta della chiave è necessaria solo per questo prototipo.
+## Link Live
+
+- **Risultati Web Scraping**:  
+  [Visualizza il sito web qui](https://gaia-cecchi.github.io/SienaMusicCity2.0/)
+
+- **Prototipo del Sito Web (Figma)**:  
+  [Visualizza il prototipo qui](https://www.figma.com/proto/gphnJVfNDCsEqwbdd6au4u/Prototipo-Sito-Web---Siena-Citt%C3%A0-della-Musica?node-id=303-1729&t=NT3avjGCStRKw5qB-1)
+
+Entrambi i link verranno aggiornati con l'evolversi del progetto per riflettere eventuali modifiche o miglioramenti.
+
+## Ringraziamenti
+
+Questo progetto fa parte della mia tesi magistrale nel programma "Tecniche e Metodi per l'UX Design" dell'**Università di Siena**. Desidero ringraziare i miei professori e colleghi che hanno fornito guida e supporto durante questo percorso.
+
+Sentitevi liberi di esplorare il codice, fornire feedback o contattarmi per qualsiasi domanda!
+
+[English version follows]
 
 # Siena Music City - Thesis Project [English]
 
