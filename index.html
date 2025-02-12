@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Siena Città della Musica - Calendario Eventi</title>
+    
+    <!-- FullCalendar Bundle (include sia CSS che JS) -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <button class="hamburger-menu" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Home</a>
+                <a href="#" class="nav-link active">Calendario</a>
+                <a href="#" class="nav-link">Mappa</a>
+                <a href="#" class="nav-link">Artisti di strada</a>
+                <a href="#" class="nav-link">Il tuo evento</a>
+                <a href="#" class="nav-link">Chi siamo</a>
+                <a href="#" class="nav-link">Accedi</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <!-- Event Category Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Categoria evento</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Live</div>
+                    <div class="filter-option">Concerto</div>
+                    <div class="filter-option">Coro</div>
+                    <div class="filter-option">Festival</div>
+                </div>
+            </div>
+
+            <!-- Genre Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Genere</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Jazz</div>
+                    <div class="filter-option">Classica</div>
+                    <div class="filter-option">Blues</div>
+                    <div class="filter-option">Rock</div>
+                    <div class="filter-option">Metal</div>
+                    <div class="filter-option">Rap/Pop</div>
+                    <div class="filter-option">Punk</div>
+                    <div class="filter-option">Elettronica</div>
+                    <div class="filter-option">Altro</div>
+                </div>
+            </div>
+
+            <!-- Location Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Luogo</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Teatro dei Rozzi</div>
+                    <div class="filter-option">Viper Theatre</div>
+                    <div class="filter-option">Museo del Tessuto</div>
+                    <div class="filter-option">Teatro Moderno</div>
+                    <div class="filter-option">Teatro Cartiere Carrara</div>
+                    <div class="filter-option">Sala Vanni</div>
+                    <div class="filter-option">Teatro Verdi</div>
+                    <div class="filter-option">Spazio Bonci</div>
+                    <div class="filter-option">Nelson Mandela Forum</div>
+                </div>
+            </div>
+
+            <!-- Distance Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Distanza</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Entro 5 km</div>
+                    <div class="filter-option">Entro 10 km</div>
+                    <div class="filter-option">Entro 20 km</div>
+                    <div class="filter-option">Entro 50 km</div>
+                    <div class="filter-option">Qualsiasi distanza</div>
+                </div>
+            </div>
+
+            <!-- Time Filter -->
+            <div class="filter-dropdown">
+                <div class="filter-header">
+                    <span>Orari</span>
+                    <img src="img/chevron-down.svg" alt="Espandi" class="chevron-icon" />
+                </div>
+                <div class="filter-content">
+                    <div class="filter-option">Tutto il giorno</div>
+                    <div class="filter-option">Mattina</div>
+                    <div class="filter-option">Pomeriggio</div>
+                    <div class="filter-option">Sera</div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="calendar-controls">
+                <input type="text" id="nameFilter" placeholder="Filtra eventi per nome..." />
+                <button id="updateEvents">Aggiorna Eventi</button>
+                <button id="resetFilters" class="btn-reset">Azzera Filtri</button> <!-- Nuovo pulsante -->
+                <div class="loading-container">
+                    <div class="loading-bar"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendar Section -->
+        <section class="calendar-section">
+            <div id="calendar"></div>
+        </section>
+    </main>
+
+<!-- Chat Widget -->
+<div id="chat-widget" class="chat-widget minimized">
+    <div class="chat-header">
+        <span>Assistente per gli eventi</span>
+        <button id="toggle-chat">
+            <img src="img/chatbot_icon.png" alt="Chat bot" />
+        </button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message bot">
+            Ciao! Sono l'assistente virtuale di Siena Città della Musica.
+            Posso aiutarti a trovare informazioni sugli eventi in programma!
+        </div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Scrivi un messaggio..." />
+        <button id="send-message">Invia</button>
+    </div>
+</div>
+
+<!-- Footer Decorator -->
+<div class="footer-decorator">
+    <img src="img/footer-decoration.svg" alt="Footer decoration" />
+</div>
+
+    <!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <!-- Partners Section -->
+        <section class="partners-section">
+            <h2>PARTNER</h2>
+            <div class="partners-grid">
+                <div class="partner-item">
+                    <img src="img/unisi.png" alt="Università degli Studi di Siena" />
+                    <span>Università degli Studi di Siena</span>
+                </div>
+                <div class="partner-item">
+                    <img src="img/logo-polo-musicale-senese-1.png" alt="Polo musicale senese" />
+                    <span>Polo musicale senese</span>
+                </div>
+                <div class="partner-item">
+                    <img src="img/teatri-siena.png" alt="Teatri di Siena" />
+                    <span>Teatri di Siena</span>
+                </div>
+                <div class="partner-item">
+                    <img src="img/comune-siena.png" alt="Comune di Siena" />
+                    <span>Comune di Siena</span>
+                </div>
+                <div class="partner-item">
+                    <img src="img/monte-paschi.png" alt="Monte dei Paschi di Siena" />
+                    <span>Monte dei Paschi di Siena</span>
+                </div>
+                <div class="partner-item">
+                    <img src="img/citta-creative-unesco.png" alt="Città Creative Unesco" />
+                    <span>Città Creative Unesco</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter-section">
+            <h2>ISCRIVITI ALLA NEWSLETTER</h2>
+            <p>Iscriviti per non perdere le prossime novità!</p>
+            <div class="newsletter-form">
+                <input type="email" placeholder="Inserisci la tua mail" />
+                <button class="btn-primary">Iscriviti</button>
+            </div>
+            
+            <h2>ISCRIVITI AL GRUPPO WHATSAPP</h2>
+            <p>Iscriviti per non perdere le prossime novità!</p>
+            <div class="whatsapp-form">
+                <input type="text" placeholder="Rimani sempre aggiornato" />
+                <button class="btn-whatsapp">
+                    <img src="img/group.png" alt="WhatsApp" />
+                    <span>WhatsApp</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Contacts Section -->
+        <section class="contacts-section">
+            <h2>CONTATTI</h2>
+            <div class="contact-list">
+                <a href="mailto:sienacittadellamusica@gmail.com" class="contact-item">
+                    <img src="img/mail.svg" alt="Email" />
+                    <span>sienacittadellamusica@gmail.com</span>
+                </a>
+                <a href="#" class="contact-item">
+                    <img src="img/fb.svg" alt="Facebook" />
+                    <span>sienacittadellamusica</span>
+                </a>
+                <a href="#" class="contact-item">
+                    <img src="img/ig.svg" alt="Instagram" />
+                    <span>sienacittadellamusica</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Support Section -->
+        <section class="support-section">
+            <h2>SUPPORTACI</h2>
+            <p>Il tuo supporto è fondamentale per mantenere viva la musica a Siena!</p>
+            <button class="btn-contribute">Scopri come contribuire</button>
+        </section>
+    </div>
+
+    <!-- Copyright -->
+    <div class="copyright">
+        ©2025 All Rights Reserved.
+        <div class="footer-links">
+            <a href="https://github.com/Gaia-Cecchi/Siena-Music-City-v2.0/tree/main#readme" 
+               target="_blank">Guida Completa</a> |
+            <a href="https://github.com/Gaia-Cecchi/Siena-Music-City-v2.0" 
+               target="_blank">GitHub</a>
+        </div>
+    </div>
+</footer>
+
+    <!-- Scripts -->
+<script type="module">
+    import { initChatbot } from './chatbot.js';
+    window.initChatbot = initChatbot;
+</script>
+<script src="./main.js"></script>
+        
+</body>
+</html>
